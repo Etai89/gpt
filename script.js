@@ -1,6 +1,6 @@
 $(document).ready(() => {
     // Initialization
-    let languageUser = localStorage.getItem('lang') === 'he-IL' ? 'he-IL' : 'en-US'; // Default to 'en-US' if not set
+    let languageUser = localStorage.getItem('lang') || 'en-US'; // Default to 'en-US' if not set
     const resultDiv = $('#result');
     const stopTTSButton = $('#stop-tts');
     const textInputButton = $('#text-input-btn');
@@ -25,6 +25,30 @@ $(document).ready(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     
+    const updateUIBasedOnLanguage = () => {
+        if (languageUser === 'he-IL') {
+            $('#settingsBtn').text('הגדרות');
+            $('#text-input').attr('placeholder', 'הקלד את השאלה שלך כאן');
+            $('#save').text('שמור הגדרות');
+            $('#silent-mode-toggle').text(silentMode ? 'מצב שקט: פועל' : 'מצב שקט: כבוי');
+            $('#toggle-recognition').text('התחל לדבר');
+            $('#text-input-btn').text('שלח שאלה');
+            $('#stop-tts').text('עצור דיבור');
+            $('#deleteConversation').text('מחק שיחה');
+            $('#resetSession').text('התחל שיחה חדשה');
+        } else {
+            $('#settingsBtn').text('Settings');
+            $('#text-input').attr('placeholder', 'Type your prompt here');
+            $('#save').text('Save Settings');
+            $('#silent-mode-toggle').text(silentMode ? 'Silent Mode: ON' : 'Silent Mode: OFF');
+            $('#toggle-recognition').text('Start Talking');
+            $('#text-input-btn').text('Send Prompt');
+            $('#stop-tts').text('Stop TTS');
+            $('#deleteConversation').text('Delete Chat');
+            $('#resetSession').text('Start New Chat');
+        }
+    };
+
     recognition.lang = languageUser;
     recognition.interimResults = false;
     recognition.continuous = false;
@@ -60,15 +84,15 @@ $(document).ready(() => {
         const temperature = $('#temperature').val();
         const lang = $('#lang').val();
 
+        languageUser = lang; // Update language based on user selection
+        recognition.lang = languageUser;
         localStorage.setItem('apiToken', JSON.stringify(newToken));
         localStorage.setItem('maxTokens', maxTokens);
         localStorage.setItem('temperature', temperature);
         localStorage.setItem('lang', lang);
 
-        // Update language based on user selection
-        languageUser = lang;
-        recognition.lang = languageUser;
         updateSilentModeButtonText();
+        updateUIBasedOnLanguage();
 
         // Show feedback message and hide settings after fade out
         settingsSaveFeedback.fadeIn().delay(5000).fadeOut(() => {
@@ -76,7 +100,6 @@ $(document).ready(() => {
         });
     });
 
-    // Handle silent mode toggle
     $('#silent-mode-toggle').click(() => {
         silentMode = !silentMode;
         localStorage.setItem('silentMode', silentMode);
@@ -84,11 +107,11 @@ $(document).ready(() => {
     });
 
     const updateSilentModeButtonText = () => {
-        silentModeToggle.text(silentMode ? 'Silent Mode: ON' : 'Silent Mode: OFF');
+        $('#silent-mode-toggle').text(silentMode ? (languageUser === 'he-IL' ? 'מצב שקט: פועל' : 'Silent Mode: ON') : (languageUser === 'he-IL' ? 'מצב שקט: כבוי' : 'Silent Mode: OFF'));
     };
 
-    // Initialize silent mode toggle button text
-    updateSilentModeButtonText();
+    // Initialize button text based on selected language
+    updateUIBasedOnLanguage();
 
     $('#deleteConversation').click(() => {
         conversationHistory = [];
@@ -121,7 +144,7 @@ $(document).ready(() => {
     });
 
     async function processPrompt(userInput) {
-        resultDiv.append(`<div class='user-text'>User: ${userInput}</div>`);
+        resultDiv.append(`<div class='user-text'>${languageUser === 'he-IL' ? 'משתמש' : 'User'}: ${userInput}</div>`);
         conversationHistory.push({ role: 'user', content: userInput });
 
         const requestBody = {
@@ -143,7 +166,7 @@ $(document).ready(() => {
             });
 
             const generatedContent = response.choices[0].message.content.trim();
-            resultDiv.append(`<div class='ai-response'>AI: ${generatedContent}</div>`);
+            resultDiv.append(`<div class='ai-response'>${languageUser === 'he-IL' ? 'AI' : 'AI'}: ${generatedContent}</div>`);
             conversationHistory.push({ role: 'assistant', content: generatedContent });
             localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
             
@@ -171,9 +194,9 @@ $(document).ready(() => {
 
     $('#lang').change(() => {
         const selectedLang = $('#lang').val();
-        languageUser = (selectedLang === 'he-IL') ? 'he-IL' : 'en-US';
+        languageUser = selectedLang === 'he-IL' ? 'he-IL' : 'en-US';
         recognition.lang = languageUser;
         localStorage.setItem('lang', selectedLang);
+        updateUIBasedOnLanguage();
     });
-
 });
