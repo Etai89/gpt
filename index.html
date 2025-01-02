@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etai Ai Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header id="first">
+            <button id="settingsBtn">Settings</button>
+        </header>
+
+        <section id="settingsArea" class="hidden">
+            <div class="settings-item">
+                <label for="apiToken">API Token:</label>
+                <input type="text" id="apiToken" placeholder="Paste your API TOKEN">
+            </div>
+
+            <div class="settings-item">
+                <label for="lang">Language:</label>
+                <select id="lang">
+                    <option value="en-US">English</option>
+                    <option value="he-IL">עברית</option>
+                </select>
+            </div>
+
+            <div class="settings-item">
+                <label for="maxTokens">Max Tokens:</label>
+                <select id="maxTokens">
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150" selected>150</option>
+                </select>
+            </div>
+
+            <div class="settings-item">
+                <label for="temperature">Temperature:</label>
+                <select id="temperature">
+                    <option value="0">0</option>
+                    <option value="0.5" selected>0.5</option>
+                    <option value="1">1</option>
+                </select>
+            </div>
+
+            <div class="control-buttons" id="settingsButtons">
+                <button id="save">Save Settings</button>
+                <button id="silent-mode-toggle">Silent Mode: OFF</button>
+            </div>
+        </section>
+
+        <main class="main">
+            <textarea id="text-input" placeholder="Type your prompt here"></textarea>
+            <div class="control-buttons" id="controlButtons">
+                <button id="toggle-recognition">Start Talking</button>
+                <button id="text-input-btn">Send Prompt</button>
+            </div>
+            <div id="result"></div>
+        </main>
+
+        <footer id="btns">
+            <button id="stop-tts" disabled>Stop TTS</button>
+            <button id="deleteConversation">Delete Chat</button>
+            <button id="resetSession">Start New Chat</button>
+        </footer>
+    </div>
+</body>
+</html>
